@@ -1,4 +1,10 @@
 {
   "extends": "@adiwajshing",
-  "ignorePatterns": "src/types/gen.ts"
+  "ignorePatterns": "src/types/gen.ts",
+  "rules": {
+    "linebreak-style": [
+      "error",
+      "windows"
+    ]
+  }
 }
