@@ -1,0 +1,4 @@
+{
+  "extends": "@adiwajshing",
+  "ignorePatterns": "src/types/gen.ts"
+}

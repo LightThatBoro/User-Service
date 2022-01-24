@@ -1,0 +1,10 @@
+.env.production
+.env.development
+.idea
+node_modules
+.build
+.serverless
+.DS_Store
+/package-lock.json
+.eslintcache
+resources/firebase-admin.json

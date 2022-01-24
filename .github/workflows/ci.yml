@@ -1,0 +1,58 @@
+name: Build Typescript Client
+
+on:
+  push:
+    branches:
+    - sls
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install OpenAPI Generator
+        run: npm i -g @openapitools/openapi-generator-cli
+
+      - name: Config GitHub Auth
+        run: |
+          echo -e "machine github.com\nlogin ${{ secrets.GH_TOKEN }}\npassword x-oauth-basic" > $HOME/.netrc
+          chmod 600 $HOME/.netrc
+
+      - name: Clone the existing package
+        run: |
+          git config --global user.email "ci@fraternie.com"
+          git config --global user.name "CI Bot"
+          git clone https://github.com/fraternie/service-name /tmp/generated
+
+      - name: Remove existing files
+        run: |
+          mkdir /tmp/git-bkp
+          mv /tmp/generated/.git /tmp/git-bkp/
+          rm -r /tmp/generated/*
+          mv /tmp/git-bkp/.git /tmp/generated/
+
+      - name: Generate package
+        run: |
+          openapi-generator-cli generate -g typescript-axios -o /tmp/generated -i ./openapi.yaml -c ./resources/openapi-client-config.json
+
+      - name: Tag and push the generated source file
+        run: |
+          API_VERSION="$GITHUB_RUN_ID-$(echo -n $GITHUB_SHA | cut -c1-6)"
+          cd /tmp/generated
+          git add .
+          git commit -m "chore: release $API_VERSION"
+          git tag $API_VERSION
+          git push -u origin main
+          git push origin $API_VERSION
