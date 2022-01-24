@@ -8,6 +8,7 @@ const handler: Handler<'usersGet'> = async(
 		count,
 		page
 	},
+	{ db },
 	{ firebaseAuth } // user that made the request
 ) => {
 	throw new Boom('Not implemented', { statusCode: 404 })
