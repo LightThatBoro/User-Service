@@ -1,30 +1,25 @@
-import dotenv from 'dotenv'
-import mongoose, { connect } from 'mongoose'
-import logger from './logger'
+import { Connection, ConnectionOptions, createConnection, getConnectionManager } from "typeorm"
+import config from '../../ormconfig'
+import entities from '../entity'
 
-const ENV = process.env.NODE_ENV || 'development'
+const CONNECTION_NAME = 'default'
+const connectionManager = getConnectionManager()
 
-dotenv.config({ path: `.env.${ENV}` })
-
-let mongo: Promise<typeof mongoose>
-const getConnection = async(): Promise<typeof mongoose> => {
-	const uri = process.env.MONGO_URI
-	if(!uri) {
-		throw new Error('DB URI absent')
+const conn = async() => {
+	let connection: Connection
+	if(connectionManager.has(CONNECTION_NAME)) {
+		connection = await connectionManager.get(CONNECTION_NAME)
+		if(!connection.isConnected) {
+			connection = await connection.connect()
+		}
+	} else {
+		console.log('created')
+		//@ts-ignore
+		config.entities = entities
+		connection = await createConnection(config as ConnectionOptions)
 	}
 
-	if(!mongo) {
-		const startTime = Date.now()
-		mongo = (
-			connect(uri)
-				.then(db => {
-					logger.info({ timeTakenMs: Date.now()-startTime }, 'connected to DB')
-					return db
-				})
-		)
-	}
-
-	return mongo
+	return connection
 }
 
-export default getConnection
+export default conn

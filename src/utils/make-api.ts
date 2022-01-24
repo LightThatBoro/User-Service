@@ -3,6 +3,7 @@ import { Context } from 'aws-lambda'
 import admin from 'firebase-admin'
 import OpenAPIBackend, { Handler as APIHandler } from 'openapi-backend'
 import { Logger } from 'pino'
+import { Connection, EntityNotFoundError } from 'typeorm'
 import { IUserType } from '../types'
 import { operations } from '../types/gen'
 import { authenticate, userCanAccess } from './auth-controller'
@@ -21,49 +22,50 @@ export type Operation = keyof operations
 // add missing parameters
 // (not all operations have all these, so we add them)
 type FullOp<O extends Operation> = operations[O] & {
-	parameters: {
-		path: {}
-		query: {}
-	}
-	requestBody: {
-		content: {
-			'application/json': {}
-		}
-	},
-	responses: {
-		'200': {
-			content: {
-				'application/json': {} | void
-			}
-		}
-	}
+    parameters: {
+        path: {}
+        query: {}
+    }
+    requestBody: {
+        content: {
+            'application/json': {}
+        }
+    },
+    responses: {
+        '200': {
+            content: {
+                'application/json': {} | void
+            }
+        }
+    }
 }
 
 export type AuthUser = admin.auth.DecodedIdToken & {
-	type?: IUserType,
-	username?: string,
-	name?: string,
-	profilePic?: string,
-	blocked?: boolean,
-	id?: string //mongo_id
+    type?: IUserType,
+    username?: string,
+    name?: string,
+    profilePic?: string,
+    blocked?: boolean,
+    id?: string //mongo_id
 }
 
 export type Authentication = { [DEFAULT_AUTH_SCHEME]: AuthUser }
 
 // full request type of an operation -- query + parameters + requestBody
 export type FullRequest<O extends Operation> =
-	FullOp<O>['parameters']['query'] &
-	FullOp<O>['parameters']['path'] &
-	FullOp<O>['requestBody']['content']['application/json']
+    FullOp<O>['parameters']['query'] &
+    FullOp<O>['parameters']['path'] &
+    FullOp<O>['requestBody']['content']['application/json']
 
 // the response type of an operation
 export type Response<O extends Operation> = FullOp<O>['responses']['200']['content']['application/json']
 
 // handle cleaned up request (type checks response too)
 export type Handler<O extends Operation> = (
-	ev: FullRequest<O>,
-	auth: Authentication,
-	logger: Logger
+    ev: FullRequest<O>,
+    conn: { db: Connection },
+    auth: Authentication,
+    logger: Logger
 ) => Promise<Response<O>>
 
 export type APIResult = { statusCode: number, body: any }
@@ -113,13 +115,11 @@ function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | P
 			}
 
 			auth = e.security as Authentication
-			const [handler] = await Promise.all([
-				getHandler(),
-				getConnection()
-			])
+			const handler = await getHandler()
 
 			result.body = await handler(
 				fullRequest,
+				{ db: await getConnection() },
 				auth,
 				logger
 			)
@@ -134,6 +134,9 @@ function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | P
 				errorDescription = error.message
 				data = error.data
 				result.statusCode = error.output.statusCode
+			} else if(error instanceof EntityNotFoundError) {
+				errorDescription = `Could not find "${error.name}"`
+				result.statusCode = 404
 			} else {
 				errorDescription = 'Internal Server Error'
 				result.statusCode = 500
@@ -186,7 +189,7 @@ export default (
 	api.registerSecurityHandler(DEFAULT_AUTH_SCHEME, async e => {
 		try {
 			const headers = e.request.headers
-			const [security] = e.operation.security!
+			const [ security ] = e.operation.security!
 			const scopes = security[DEFAULT_AUTH_SCHEME]
 
 			// remove "Bearer " prefix
@@ -230,7 +233,8 @@ export default (
 			}
 		}),
 		validationFail: errorHandlingWrap<any>(async() => {
-			return async() => { }
+			return async() => {
+			}
 		}),
 		...Object.keys(routes).reduce((dict, key) => ({
 			...dict, [key]: errorHandlingWrap(routes[key])
