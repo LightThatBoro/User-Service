@@ -34,10 +34,14 @@ export const describeWithApp = (
     ) => void,
 ) => describe(name, () => {
 	const app = makeTestServer();
+	const conn = getConnection();
+
+	beforeAll(async() => {
+		await conn;
+	});
 
 	afterAll(async() => {
-		const conn = await getConnection();
-		await conn.close();
+		await (await conn).close();
 	});
 
 	tests(app);

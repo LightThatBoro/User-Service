@@ -2,8 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeor
 import { IUser } from "../types";
 
 @Entity()
-export default class implements IUser {
-
+export class User implements IUser {
     @PrimaryGeneratedColumn({ name: "id", type: "int", unsigned: true })
     id: number
 

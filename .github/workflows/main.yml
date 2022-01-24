@@ -8,10 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [ 14.x ]
+        node-version: [14.x]
     steps:
       - uses: actions/checkout@v2
 
@@ -23,13 +22,24 @@ jobs:
       - name: Install packages
         run: yarn --network-concurrency 1
 
-      # - name: Run tests
-      #   run: |
-      #     NODE_ENV=test
-      #     npm run test
+      - name: Setup Postgres DB
+        uses: CasperWA/postgresql-action@v1.2
+        with:
+          postgresql db: 'auth'
+          postgresql user: 'postgres'
+          postgresql password: ''
+          postgresql auth: trust
+
+      - name: Run tests
+        run: |
+          NODE_ENV=test yarn migrate
+          yarn run test
 
       - name: Copy env # copy in your env file
         run: 'echo -e "${{secrets.ENV}}" > .env'
+
+      - name: Run Migrations
+        run: NODE_ENV=production yarn migrate
 
       - name: Serverless AWS authentication
         run: yarn sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY }} --secret ${{ secrets.AWS_SECRET_KEY }}

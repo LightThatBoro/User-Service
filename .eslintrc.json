@@ -1,6 +1,7 @@
 {
   "extends": "@sarcastic-verma",
   "ignorePatterns": [
-    "src/types/gen.ts"
+    "src/types/gen.ts",
+    "src/migrations/*"
   ]
 }
