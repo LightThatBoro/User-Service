@@ -46,7 +46,7 @@ export type AuthUser = admin.auth.DecodedIdToken & {
     name?: string,
     profilePic?: string,
     blocked?: boolean,
-    id?: string //mongo_id
+    id?: string //typeorm_id
 }
 
 export type Authentication = { [DEFAULT_AUTH_SCHEME]: AuthUser }
