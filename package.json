@@ -42,7 +42,7 @@
     "@types/supertest": "^2.0.11",
     "chance": "^1.1.8",
     "eslint": "^7.32.0",
-    "@adiwajshing/eslint-config": "git+https://github.com/adiwajshing/eslint-config",
+    "@sarcastic-verma/eslint-config": "git+https://github.com/sarcastic-verma/eslint",
     "express": "^4.17.1",
     "jest": "^26.6.3",
     "openapi-typescript": "^4.0.0",

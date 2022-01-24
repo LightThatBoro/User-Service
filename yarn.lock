@@ -10,16 +10,6 @@
     d "1"
     es5-ext "^0.10.47"
 
-"@adiwajshing/eslint-config@git+https://github.com/adiwajshing/eslint-config":
-  version "1.0.0"
-  resolved "git+https://github.com/adiwajshing/eslint-config#db16c7427bd6dcf8fba20e0aaa526724e46c83aa"
-  dependencies:
-    "@typescript-eslint/eslint-plugin" "^4.33.0"
-    "@typescript-eslint/parser" "^4.33.0"
-    eslint-plugin-react "^7.26.1"
-    eslint-plugin-simple-import-sort "^7.0.0"
-    eslint-plugin-unused-imports "^1.1.5"
-
 "@amplitude/identify@^1.9.1":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/@amplitude/identify/-/identify-1.9.1.tgz#17e5f0b8615001fd9e10edbbb52eedb4b2794c17"
@@ -2006,6 +1996,16 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
+
+"@sarcastic-verma/eslint-config@git+https://github.com/sarcastic-verma/eslint":
+  version "1.0.0"
+  resolved "git+https://github.com/sarcastic-verma/eslint#4fe9354ada5d1f4ef312dd98302930a4cf45301c"
+  dependencies:
+    "@typescript-eslint/eslint-plugin" "^4.33.0"
+    "@typescript-eslint/parser" "^4.33.0"
+    eslint-plugin-react "^7.26.1"
+    eslint-plugin-simple-import-sort "^7.0.0"
+    eslint-plugin-unused-imports "^1.1.5"
 
 "@serverless/cli@^1.5.2":
   version "1.5.2"

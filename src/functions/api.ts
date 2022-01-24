@@ -1,8 +1,8 @@
-import { APIGatewayProxyEvent, Context } from 'aws-lambda'
-import ROUTES from '../routes'
-import makeApi from '../utils/make-api'
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import ROUTES from "../routes";
+import makeApi from "../utils/make-api";
 
-export const api = makeApi('openapi.yaml', ROUTES)
+export const api = makeApi("openapi.yaml", ROUTES);
 
 export const handler = (event: APIGatewayProxyEvent, context: Context) => {
 	/*
@@ -15,7 +15,7 @@ export const handler = (event: APIGatewayProxyEvent, context: Context) => {
 
 	TL;DR: Suggested by Official MongoDB Docs
 	 */
-	context.callbackWaitsForEmptyEventLoop = false
+	context.callbackWaitsForEmptyEventLoop = false;
 
 	return 	api.handleRequest(
 		{
@@ -27,5 +27,5 @@ export const handler = (event: APIGatewayProxyEvent, context: Context) => {
 		},
 		event,
 		context,
-	)
-}
+	);
+};

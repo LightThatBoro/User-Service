@@ -1,4 +1,4 @@
-import { components } from './gen'
+import { components } from "./gen";
 
-export type IUser = components['schemas']['user-model']
-export type IUserType = 'user' | 'educator' | 'admin'
+export type IUser = components["schemas"]["user-model"]
+export type IUserType = "user" | "educator" | "admin"

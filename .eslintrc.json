@@ -1,10 +1,6 @@
 {
-  "extends": "@adiwajshing",
-  "ignorePatterns": "src/types/gen.ts",
-  "rules": {
-    "linebreak-style": [
-      "error",
-      "windows"
-    ]
-  }
+  "extends": "@sarcastic-verma",
+  "ignorePatterns": [
+    "src/types/gen.ts"
+  ]
 }

@@ -1,11 +1,11 @@
-const nodeEnv = process.env.NODE_ENV || 'development'
-require('dotenv').config({ path: `.env.${nodeEnv}` })
+const nodeEnv = process.env.NODE_ENV || "development";
+require("dotenv").config({ path: `.env.${nodeEnv}` });
 
-const isTS = process.env.TS === '1'
-const URL = require('url').URL
-const uri = new URL(process.env.DB_URI)
+const isTS = process.env.TS === "1";
+const URL = require("url").URL;
+const uri = new URL(process.env.DB_URI);
 
-const NamingStrategy = require('typeorm-naming-strategies').SnakeNamingStrategy
+const NamingStrategy = require("typeorm-naming-strategies").SnakeNamingStrategy;
 
 module.exports = {
 	type: uri.protocol.slice(0, -1),
@@ -16,11 +16,11 @@ module.exports = {
 	database: uri.pathname.slice(1),
 	synchronize: false,
 	logging: false,
-	entities: [isTS ? `src/entity/*.ts` : `.build/src/entity/*.js`],
-	migrations: [isTS ? `src/migrations/*.ts` : `.build/src/migrations/*.js`],
+	entities: [isTS ? "src/entity/*.ts" : ".build/src/entity/*.js"],
+	migrations: [isTS ? "src/migrations/*.ts" : ".build/src/migrations/*.js"],
 	cli: {
-		migrationsDir: 'src/migrations',
+		migrationsDir: "src/migrations",
 	},
 	extra: { connectionLimit: 2 },
 	namingStrategy: new NamingStrategy()
-}
+};

@@ -1,2 +1,2 @@
-import P from 'pino'
-export default P()
+import P from "pino";
+export default P();
