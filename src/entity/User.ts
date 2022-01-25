@@ -3,8 +3,8 @@ import { IUser } from "../types";
 
 @Entity()
 export class User implements IUser {
-    @PrimaryGeneratedColumn({ name: "id", type: "int", unsigned: true })
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
 
     @Column({ nullable: false })
     type: "user" | "educator" | "admin"
