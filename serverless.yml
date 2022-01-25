@@ -23,6 +23,11 @@ provider:
             - s3:DeleteObject
           Resource:
             - "*"
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource:
+            - "*"
 
 resources:
   Resources:
@@ -39,10 +44,20 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+  consumer:
+    handler: src/functions/service-name-consumer.handler
+    timeout: 10
+    reservedConcurrency: null
+    events:
+      - sns:
+          topicName: ${self:custom.instituteSubscriberTopic}
+      - sns:
+          topicName: ${self:custom.userSubscriberTopic}
 
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
+  - serverless-offline-sns
   - serverless-dotenv-plugin
 
 package:
@@ -56,3 +71,9 @@ custom:
       - service-name-assets
   S3Bucket:
     name: service-name-assets
+  publisherTopic: "${self:provider.stage}-ServiceName"
+  instituteSubscriberTopic: "${self:provider.stage}-Institute"
+  userSubscriberTopic: "${self:provider.stage}-User"
+  serverless-offline-sns:
+    port: 4002 # a free port for the sns server to run on
+    debug: true
