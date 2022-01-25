@@ -71,7 +71,6 @@ custom:
       - service-name-assets
   S3Bucket:
     name: service-name-assets
-  publisherTopic: "${self:provider.stage}-ServiceName"
   instituteSubscriberTopic: "${self:provider.stage}-Institute"
   userSubscriberTopic: "${self:provider.stage}-User"
   serverless-offline-sns:
