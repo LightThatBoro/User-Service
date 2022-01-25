@@ -1,6 +1,6 @@
 import { Boom } from "@hapi/boom";
 import { IUserType } from "../types";
-import { firebaseAdmin } from "./firebase";
+import { getFirebaseAdmin } from "./firebase";
 import { AuthUser } from "./make-api";
 
 const SCOPE_MAP: { [T in IUserType]: number } = {
@@ -14,7 +14,7 @@ const authenticate = async(idToken: string): Promise<AuthUser | boolean> => {
 		return JSON.parse(idToken);
 	}
 
-	return await firebaseAdmin.auth().verifyIdToken(idToken).catch(() => false);
+	return await getFirebaseAdmin().auth().verifyIdToken(idToken).catch(() => false);
 };
 
 export type UserClaim = {
@@ -31,7 +31,7 @@ const setUserClaim = async(sub: string, claim: UserClaim): Promise<void> => {
 		return;
 	}
 
-	await firebaseAdmin.auth().setCustomUserClaims(sub, claim);
+	await getFirebaseAdmin().auth().setCustomUserClaims(sub, claim);
 };
 
 export const userCanAccess = (user: { type?: IUserType }, scopes: string[] | undefined) => {
