@@ -1,6 +1,6 @@
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 import { ACCOUNT_ID, AWS_REGION, SNS_TOPIC } from "../config.json";
-import { Subscribers } from "../subscribers";
+import { Subscribers } from "../types";
 
 const options: { region: string, endpoint?: string } = { region: AWS_REGION };
 

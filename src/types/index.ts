@@ -9,4 +9,8 @@ export interface ISubscriberParams {
     db: Connection
 }
 
+export enum Subscribers {
+    InstituteUpdate = "InstituteUpdate",
+}
+
 export type IUserType = "user" | "educator" | "admin";
