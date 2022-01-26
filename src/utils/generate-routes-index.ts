@@ -1,9 +1,7 @@
 import { readdir, stat, writeFile } from "fs/promises";
 import { join, parse, } from "path";
-
-const ROUTES_FOLDER = "src/routes";
-// from: https://stackoverflow.com/questions/57556471/convert-kebab-case-to-camelcase-with-javascript
-const camelize = (s: string) => s.replace(/-./g, x => x[1].toUpperCase());
+import { operationMediator } from "../types/operation-mediator";
+import { camelize, kebabize, routeFileBoilerplate, ROUTES_FOLDER } from "./gen-utils";
 
 export const readdirRecursive = async(dir: string): Promise<string[]> => {
 	const subdirs = await readdir(dir);
@@ -16,6 +14,12 @@ export const readdirRecursive = async(dir: string): Promise<string[]> => {
 		)
 	);
 	return files.reduce((a, f) => a.concat(f), []);
+};
+
+const generateRoutes = async() => {
+	for(const key of Object.keys(operationMediator)) {
+		await writeFile(join(ROUTES_FOLDER, `${ kebabize(key) }.ts`), routeFileBoilerplate(key));
+	}
 };
 
 const generateRoutesIndex = async() => {
@@ -36,4 +40,4 @@ const generateRoutesIndex = async() => {
 	await writeFile(join(ROUTES_FOLDER, "index.ts"), indexTs);
 };
 
-generateRoutesIndex().then(() => console.log("updated routes"));
+generateRoutes().then(() => generateRoutesIndex().then(() => console.log("updated routes")));

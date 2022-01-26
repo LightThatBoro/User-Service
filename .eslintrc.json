@@ -2,6 +2,7 @@
   "extends": "@sarcastic-verma",
   "ignorePatterns": [
     "src/types/gen.ts",
+    "src/types/operation-mediator.ts",
     "src/migrations/*"
   ]
 }

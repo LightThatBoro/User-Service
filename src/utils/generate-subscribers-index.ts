@@ -1,18 +1,8 @@
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
 import { Subscribers } from "../types";
+import { kebabize, pascalize, subFileBoilerplate, SUBSCRIBERS_FOLDER } from "./gen-utils";
 import { readdirRecursive } from "./generate-routes-index";
-
-const SUBSCRIBERS_FOLDER = "src/subscribers";
-
-const subFileBoilerplate = (pascalName: string) => `import { ISubscriberParams } from "../types";\n\nexport const ${ pascalName } = async({ userId, data, db }: ISubscriberParams) => {
-\treturn;
-};`;
-
-const pascalize = (s: string) => s.replace(/(^\w|-\w)/g,
-	x => x.replace(/-/, "").toUpperCase());
-
-const kebabize = (s: string) => s.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 
 const generateSubscriberFile = async() => {
 	for(const key of Object.keys(Subscribers)) {
