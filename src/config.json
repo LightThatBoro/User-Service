@@ -1,5 +1,4 @@
 {
-  "AMPLITUDE_KEY": "",
   "UPLOAD_BUCKET_NAME": "service-name-assets",
   "SERVICE_ACCOUNT_PATH": "./resources/firebase-admin.json",
   "AWS_REGION": "ap-south-1",

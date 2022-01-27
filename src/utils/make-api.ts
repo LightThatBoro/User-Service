@@ -1,14 +1,13 @@
+import { authenticate, IUserType, logger as MAIN_LOGGER, userCanAccess } from "@frat/core";
 import { Boom } from "@hapi/boom";
 import { Context } from "aws-lambda";
 import admin from "firebase-admin";
 import OpenAPIBackend, { Handler as APIHandler } from "openapi-backend";
 import { Logger } from "pino";
 import { Connection, EntityNotFoundError } from "typeorm";
-import { IUserType } from "../types";
 import { operations } from "../types/gen";
-import { authenticate, userCanAccess } from "./auth-controller";
+import { getFirebaseAdmin } from "./firebase";
 import getConnection from "./get-connection";
-import MAIN_LOGGER from "./logger";
 
 const DEFAULT_AUTH_SCHEME = "firebaseAuth";
 
@@ -91,7 +90,6 @@ function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | P
 			if(!!query[key] && Array.isArray(query[key]) && query[key]?.length === 1) {
 				query[key] = query[key]![0];
 			}
-
 		});
 
 		const fullRequest = { // combine all params
@@ -199,14 +197,14 @@ export default (
 				throw new Boom("Missing auth token", { statusCode: 401 });
 			}
 
-			const authUser = await authenticate(idToken);
+			const authUser = await authenticate<AuthUser>(idToken, getFirebaseAdmin());
 
 			if(typeof authUser === "boolean") {
 				// noinspection ExceptionCaughtLocallyJS
 				throw new Boom("Token expired", { statusCode: 401 });
 			}
 
-			if(!userCanAccess(authUser, scopes)) {
+			if(!userCanAccess(authUser, scopes, Boom)) {
 				// noinspection ExceptionCaughtLocallyJS
 				throw new Boom("Insufficient Access", { statusCode: 403 });
 			}

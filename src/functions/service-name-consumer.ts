@@ -1,8 +1,8 @@
+import { logger as MAIN_LOGGER } from "@frat/core";
 import { Context, SNSEvent } from "aws-lambda";
 import subscribers from "../subscribers";
 import { ISubscriberParams } from "../types";
 import getConnection from "../utils/get-connection";
-import MAIN_LOGGER from "../utils/logger";
 
 export const handler = async(event: SNSEvent, ctx: Context) => {
 	const logger = MAIN_LOGGER.child({ requestId: ctx.awsRequestId });
