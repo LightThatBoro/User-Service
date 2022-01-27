@@ -1,4 +1,13 @@
-import { authenticate, IUserType, logger as MAIN_LOGGER, userCanAccess } from "@frat/core";
+import {
+	APIResult,
+	DEFAULT_AUTH_SCHEME,
+	getAuthUser,
+	getFullRequest,
+	logAndReturn,
+	LoggedInUserClaim,
+	logger as MAIN_LOGGER,
+	MissingParameters
+} from "@frat/core";
 import { Boom } from "@hapi/boom";
 import { Context } from "aws-lambda";
 import admin from "firebase-admin";
@@ -9,8 +18,6 @@ import { operations } from "../types/gen";
 import { getFirebaseAdmin } from "./firebase";
 import getConnection from "./get-connection";
 
-const DEFAULT_AUTH_SCHEME = "firebaseAuth";
-
 /**
  * Main file with almost all the boilerplate required
  * for auth, wrapping a pure function into an HTTP controller etc.
@@ -20,33 +27,9 @@ export type Operation = keyof operations
 
 // add missing parameters
 // (not all operations have all these, so we add them)
-type FullOp<O extends Operation> = operations[O] & {
-    parameters: {
-        path: {}
-        query: {}
-    }
-    requestBody: {
-        content: {
-            "application/json": {}
-        }
-    },
-    responses: {
-        "200": {
-            content: {
-                "application/json": {} | void
-            }
-        }
-    }
-}
+type FullOp<O extends Operation> = operations[O] & MissingParameters;
 
-export type AuthUser = admin.auth.DecodedIdToken & {
-    type?: IUserType,
-    username?: string,
-    name?: string,
-    profilePic?: string,
-    blocked?: boolean,
-    id?: string //typeorm_id
-}
+export type AuthUser = admin.auth.DecodedIdToken & LoggedInUserClaim;
 
 export type Authentication = { [DEFAULT_AUTH_SCHEME]: AuthUser }
 
@@ -67,36 +50,14 @@ export type Handler<O extends Operation> = (
     logger: Logger
 ) => Promise<Response<O>>
 
-export type APIResult = { statusCode: number, body: any }
-
-const headers = {
-	"content-type": "application/json",
-	"access-control-allow-origin": "*", // lazy cors config
-};
-
-const IMPORTANT_METHODS = new Set([ "delete", "post", "patch" ]);
-
 // backend agnostic wrapper
 // makes a function work for serverless, express & others
 function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | Promise<Handler<O>>): APIHandler {
 	return async(e, req, ctx: Context) => {
 		const logger = MAIN_LOGGER.child({ requestId: ctx?.awsRequestId || "unknown" });
 		const result = {} as APIResult;
-		const query = {
-			...(e.request.query || {}),
-			...(req?.multiValueQueryStringParameters || {})
-		};
-		Object.keys(query).forEach(key => {
-			if(!!query[key] && Array.isArray(query[key]) && query[key]?.length === 1) {
-				query[key] = query[key]![0];
-			}
-		});
 
-		const fullRequest = { // combine all params
-			...query,
-			...(e.request.requestBody || {}),
-			...(e.request.params || {})
-		};
+		const fullRequest = getFullRequest(e, req);
 
 		let auth: Authentication | undefined = undefined;
 		let trace: string | undefined = undefined;
@@ -133,7 +94,7 @@ function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | P
 				data = error.data;
 				result.statusCode = error.output.statusCode;
 			} else if(error instanceof EntityNotFoundError) {
-				errorDescription = `Could not find "${error.name}"`;
+				errorDescription = `Could not find "${ error.name }"`;
 				result.statusCode = 404;
 			} else {
 				errorDescription = "Internal Server Error";
@@ -148,32 +109,7 @@ function errorHandlingWrap<O extends Operation>(getHandler: () => Handler<O> | P
 			};
 		}
 
-		if(trace || IMPORTANT_METHODS.has(e.request.method)) {
-			const method = trace ? "error" : "info";
-			logger[method]({
-				trace,
-				path: `${ e.request.method } ${ e.request.path }`,
-				res: result.body,
-				req: fullRequest,
-				statusCode: result.statusCode,
-				actor: auth?.[DEFAULT_AUTH_SCHEME]?.id,
-				actorType: auth?.[DEFAULT_AUTH_SCHEME]?.type
-			}, "processed request");
-		}
-
-		const res = e.request["res"];
-		if(typeof res?.status === "function") {
-			res.set(headers);
-			return res
-				.status(result.statusCode)
-				.send(result.body);
-		} else {
-			return {
-				statusCode: result.statusCode,
-				body: JSON.stringify(result.body),
-				headers
-			};
-		}
+		return logAndReturn(auth, result, fullRequest, trace, logger, e);
 	};
 }
 
@@ -184,46 +120,11 @@ export default (
 	// create api with your definition file or object
 	const api = new OpenAPIBackend({ definition, quick: process.env.NODE_ENV === "production" });
 
-	api.registerSecurityHandler(DEFAULT_AUTH_SCHEME, async e => {
-		try {
-			const headers = e.request.headers;
-			const [ security ] = e.operation.security!;
-			const scopes = security[DEFAULT_AUTH_SCHEME];
+	api.registerSecurityHandler(DEFAULT_AUTH_SCHEME,
+		async e => await getAuthUser<AuthUser>(e,
+			getFirebaseAdmin(),
+			Boom));
 
-			// remove "Bearer " prefix
-			const idToken = (headers.Authorization || headers.authorization)?.slice(7);
-			if(!idToken || typeof idToken !== "string") {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Boom("Missing auth token", { statusCode: 401 });
-			}
-
-			const authUser = await authenticate<AuthUser>(idToken, getFirebaseAdmin());
-
-			if(typeof authUser === "boolean") {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Boom("Token expired", { statusCode: 401 });
-			}
-
-			if(!userCanAccess(authUser, scopes, Boom)) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Boom("Insufficient Access", { statusCode: 403 });
-			}
-
-			if(authUser.blocked) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Boom("User is blocked", { statusCode: 403 });
-			}
-
-			return authUser;
-		} catch(error) {
-			if(error instanceof Boom) {
-				throw error;
-			} else {
-				throw new Boom(error.message, { statusCode: error.code || 401 });
-			}
-
-		}
-	});
 	api.register({
 		notFound: errorHandlingWrap(() => {
 			return async() => {
@@ -239,7 +140,6 @@ export default (
 		}), {})
 	});
 
-	// initialize the backend
-	api.init().then();
+	api.init().then(); 	// initialize the backend
 	return api;
 };

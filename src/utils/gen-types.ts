@@ -1,7 +1,7 @@
+import { TYPES_FOLDER } from "@frat/core";
 import { readFile, writeFile } from "fs/promises";
 import openapiTS, { SchemaObject } from "openapi-typescript";
 import { join } from "path";
-import { TYPES_FOLDER } from "./gen-utils";
 
 (async() => {
 	const output = await openapiTS("./openapi.yaml", {

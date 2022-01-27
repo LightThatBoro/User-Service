@@ -1,7 +1,7 @@
+import { camelize, kebabize, routeFileBoilerplate, ROUTES_FOLDER } from "@frat/core";
 import { readdir, stat, writeFile } from "fs/promises";
 import { join, parse, } from "path";
 import { operationMediator } from "../types/operation-mediator";
-import { camelize, kebabize, routeFileBoilerplate, ROUTES_FOLDER } from "./gen-utils";
 
 export const readdirRecursive = async(dir: string): Promise<string[]> => {
 	const subdirs = await readdir(dir);

@@ -1,7 +1,7 @@
+import { kebabize, pascalize, subFileBoilerplate, SUBSCRIBERS_FOLDER } from "@frat/core";
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
 import { Subscribers } from "../types";
-import { kebabize, pascalize, subFileBoilerplate, SUBSCRIBERS_FOLDER } from "./gen-utils";
 import { readdirRecursive } from "./generate-routes-index";
 
 const generateSubscriberFile = async() => {
