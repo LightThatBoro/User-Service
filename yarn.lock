@@ -1342,12 +1342,11 @@
   dependencies:
     tslib "^2.1.0"
 
-"@frat/core@git+https://github.com/fraternie/frat-core#a307f19":
+"@frat/core@git+https://github.com/fraternie/frat-core":
   version "1.0.0"
-  resolved "git+https://github.com/fraternie/frat-core#a307f19c0191f4eeade670f690c11b65d60e2e10"
+  resolved "git+https://github.com/fraternie/frat-core#b7f000a1787f148ae8e824b4a1abddf1cc934ff5"
   dependencies:
     "@amplitude/node" "^1.9.1"
-    firebase-admin "^9.11.1"
     pino "^6.11.3"
 
 "@google-cloud/common@^3.8.1":
