@@ -1349,6 +1349,13 @@
     "@amplitude/node" "^1.9.1"
     pino "^6.11.3"
 
+"@frat/s3@git+https://github.com/fraternie/frat-s3":
+  version "1.0.0"
+  resolved "git+https://github.com/fraternie/frat-s3#e04b07949e7380607067c269b4471d6fd4cdb805"
+  dependencies:
+    "@aws-sdk/client-s3" "^3.45.0"
+    "@aws-sdk/s3-presigned-post" "^3.45.0"
+
 "@google-cloud/common@^3.8.1":
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/@google-cloud/common/-/common-3.9.0.tgz#d93e62d13e66edacfad1cd25b20fdbbc11d9f6dd"

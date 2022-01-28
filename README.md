@@ -17,6 +17,7 @@ The template enforces a design driven architecture
 - Also ensure you generate a 200/204 response schema
 - Must specify the scopes/auth if required
 - Once you make modifications, call `yarn generate:types` to generate the typescript types from the doc
+- Make sure to use names that end with "Body" to define request-body component in swagger doc.
 
 ## Boilerplate
 - The boilerplate in the template allows you to simply create "handlers" for each route that automatically parse the request & type validate the response. See the Handler type in `src/utils/make-api` & an example with `src/routes/users-get`
@@ -26,6 +27,9 @@ The template enforces a design driven architecture
 ### Authentication
 - Specify the auth required for each route in the openAPI doc.
 - Each auth scheme used in the doc is implemented in `make-api.ts`
+
+### Plugins
+- To use s3 install `@frat/s3` from fraternie org, else remove the `resources/s3Bucket.yaml` and it from `serverless.yaml` 
 
 ### Controllers
 - Each controller is specific to the route and must be placed inside a separate folder. Follow the naming scheme of `model-method.ts`. Where `model` is the model being updated & `method` is the method used. Eg. the get users controller must be `users-get.ts` 

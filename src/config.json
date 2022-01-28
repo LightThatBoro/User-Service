@@ -3,6 +3,5 @@
   "SERVICE_ACCOUNT_PATH": "./resources/firebase-admin.json",
   "AWS_REGION": "ap-south-1",
   "ACCOUNT_ID": "306836961686",
-  "SNS_TOPIC": "ServiceName",
-  "URL_EXPIRATION_SECONDS": 600
+  "SNS_TOPIC": "ServiceName"
 }
