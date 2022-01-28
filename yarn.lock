@@ -1356,6 +1356,12 @@
     "@aws-sdk/client-s3" "^3.45.0"
     "@aws-sdk/s3-presigned-post" "^3.45.0"
 
+"@frat/sns@git+https://github.com/fraternie/frat-sns":
+  version "1.0.0"
+  resolved "git+https://github.com/fraternie/frat-sns#c7677837eac4eda9406f2081eaee3ec971d7eb6f"
+  dependencies:
+    "@aws-sdk/client-sns" "^3.48.0"
+
 "@google-cloud/common@^3.8.1":
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/@google-cloud/common/-/common-3.9.0.tgz#d93e62d13e66edacfad1cd25b20fdbbc11d9f6dd"

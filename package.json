@@ -19,10 +19,10 @@
   "author": "Shivam Verma",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.48.0",
     "@hapi/boom": "^9.1.2",
     "@frat/core": "git+https://github.com/fraternie/frat-core",
     "@frat/s3": "git+https://github.com/fraternie/frat-s3",
+    "@frat/sns": "git+https://github.com/fraternie/frat-sns",
     "axios": "^0.21.4",
     "dotenv": "^8.2.0",
     "firebase-admin": "^9.11.1",
