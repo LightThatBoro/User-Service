@@ -13,8 +13,18 @@ export const operationMediator = {
       200: {
         content: {
           "application/json": {
-            users: components["schemas"]["user-model"][],
+            users: components["schemas"]["User"][],
           },
+        },
+      },
+    }`,
+  },
+  createUser: {
+    responses: `{
+      /** Created */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"],
         },
       },
     }`,

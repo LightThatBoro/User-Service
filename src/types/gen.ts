@@ -6,22 +6,34 @@
 export interface paths {
   "/users": {
     get: operations["usersGet"];
+    post: operations["createUser"];
   };
 }
 
 export interface components {
   schemas: {
-    "user-create": {
-      /** Name of the user */
+    UserCreate: {
+      /**
+       * @description Name of the user
+       * @example PP
+       */
       name: string;
-      /** Age of user */
+      /** @description Age of user */
       age: number;
     };
-    "user-model": {
+    User: {
       type?: string;
     };
-    /** An ISO formatted timestamp */
-    timestamp: Date | string;
+    /**
+     * Format: url
+     * @description Url of a resource
+     */
+    Url: string;
+    /**
+     * Format: date-time
+     * @description An ISO formatted timestamp
+     */
+    Timestamp: Date | string;
   };
 }
 
@@ -40,8 +52,18 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            users: components["schemas"]["user-model"][];
+            users: components["schemas"]["User"][];
           };
+        };
+      };
+    };
+  };
+  createUser: {
+    responses: {
+      /** Created */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"];
         };
       };
     };

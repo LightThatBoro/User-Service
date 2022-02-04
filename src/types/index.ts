@@ -1,7 +1,7 @@
 import { Connection } from "typeorm";
 import { components } from "./gen";
 
-export type IUser = components["schemas"]["user-model"];
+export type IUser = components["schemas"]["User"];
 
 export interface ISubscriberParams {
     userId: string,

@@ -7,6 +7,20 @@ info:
 
 paths:
   /users:
+    post:
+      summary: Creates a new user
+      operationId: createUser
+      tags:
+        - Users
+      security:
+        - firebaseAuth: [ ]
+      responses:
+        200:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
     get:
       operationId: usersGet
       tags:
@@ -34,7 +48,7 @@ paths:
             default: 1
             minimum: 1
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
@@ -47,10 +61,10 @@ paths:
                   users:
                     type: array
                     items:
-                      $ref: '#/components/schemas/user-model'
+                      $ref: '#/components/schemas/User'
 components:
   schemas:
-    user-create:
+    UserCreate:
       type: object
       required:
         - name
@@ -65,15 +79,19 @@ components:
           description: Age of user
           minimum: 0
           maximum: 150
-    user-model:
+    User:
       type: object
       properties:
         type:
           type: string
-    timestamp:
+    Url:
       type: string
-      format: 'date-time'
-      description: 'An ISO formatted timestamp'
+      description: Url of a resource
+      format: url
+    Timestamp:
+      type: string
+      format: date-time
+      description: An ISO formatted timestamp
   securitySchemes:
     firebaseAuth:
       type: http
