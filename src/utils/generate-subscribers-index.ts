@@ -1,4 +1,4 @@
-import { kebabize, pascalize, subFileBoilerplate, SUBSCRIBERS_FOLDER } from "@frat/core";
+import { kebabize, pascalize, SUBSCRIBERS_FOLDER, typeormRouteFileBoilerplate } from "@frat/core";
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
 import { Subscribers } from "../types/subscriber-types";
@@ -6,7 +6,7 @@ import { readdirRecursive } from "./generate-routes-index";
 
 const generateSubscriberFile = async() => {
 	for(const key of Object.keys(Subscribers)) {
-		await writeFile(join(SUBSCRIBERS_FOLDER, `${ kebabize(key) }.ts`), subFileBoilerplate(key));
+		await writeFile(join(SUBSCRIBERS_FOLDER, `${ kebabize(key) }.ts`), typeormRouteFileBoilerplate(key));
 	}
 };
 
