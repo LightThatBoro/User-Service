@@ -12,6 +12,10 @@ export interface paths {
 
 export interface components {
   schemas: {
+    PaginationHelper: {
+      nextPage: number | null;
+      total?: number;
+    };
     UserCreate: {
       /**
        * @description Name of the user
@@ -21,8 +25,17 @@ export interface components {
       /** @description Age of user */
       age: number;
     };
+    Users: {
+      users: components["schemas"]["User"][];
+    };
     User: {
       type?: string;
+    };
+    ErrorSchema: {
+      message: string;
+      error: string;
+      statusCode: number;
+      data: { [key: string]: unknown } | null;
     };
     /**
      * Format: url
@@ -35,38 +48,66 @@ export interface components {
      */
     Timestamp: Date | string;
   };
+  responses: {
+    /** Returns Users */
+    UsersResponse: {
+      content: {
+        "application/json": components["schemas"]["PaginationHelper"] &
+          components["schemas"]["Users"];
+      };
+    };
+    /** Returns User */
+    UserResponse: {
+      content: {
+        "application/json": components["schemas"]["User"];
+      };
+    };
+    /** Error response */
+    ErrorResponse: {
+      content: {
+        "application/json": components["schemas"]["ErrorSchema"];
+      };
+    };
+  };
+  parameters: {
+    QParam: string | null;
+    CountParam: number;
+    PageParam: number;
+    IncludeTotal: "false" | "true";
+    IdParam: string;
+    /** @description returns the single resource */
+    OptionalIdParam: string;
+  };
+  requestBodies: {
+    UserUpsertBody: {
+      content: {
+        "application/json": components["schemas"]["UserCreate"];
+      };
+    };
+  };
 }
 
 export interface operations {
   usersGet: {
     parameters: {
       query: {
-        /** Search for users */
-        q?: string | null;
-        count?: number;
-        page?: number;
+        includeTotal?: components["parameters"]["IncludeTotal"];
+        q?: components["parameters"]["QParam"];
+        /** returns the single resource */
+        id?: components["parameters"]["OptionalIdParam"];
+        count?: components["parameters"]["CountParam"];
+        page?: components["parameters"]["PageParam"];
       };
     };
     responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": {
-            users: components["schemas"]["User"][];
-          };
-        };
-      };
+      200: components["responses"]["UsersResponse"];
     };
   };
   createUser: {
     responses: {
-      /** Created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["User"];
-        };
-      };
+      200: components["responses"]["UserResponse"];
     };
+    requestBody: components["requestBodies"]["UserUpsertBody"];
   };
 }
 

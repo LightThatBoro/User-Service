@@ -2,32 +2,23 @@ export const operationMediator = {
   usersGet: {
     parameters: `{
       query: {
-        /** Search for users */
-        q?: string | null,
-        count?: number,
-        page?: number,
+        includeTotal?: components["parameters"]["IncludeTotal"],
+        q?: components["parameters"]["QParam"],
+        /** returns the single resource */
+        id?: components["parameters"]["OptionalIdParam"],
+        count?: components["parameters"]["CountParam"],
+        page?: components["parameters"]["PageParam"],
       },
     }`,
     responses: `{
-      /** OK */
-      200: {
-        content: {
-          "application/json": {
-            users: components["schemas"]["User"][],
-          },
-        },
-      },
+      200: components["responses"]["UsersResponse"],
     }`,
   },
   createUser: {
     responses: `{
-      /** Created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["User"],
-        },
-      },
+      200: components["responses"]["UserResponse"],
     }`,
+    requestBody: `components["requestBodies"]["UserUpsertBody]`,
   },
 }
 

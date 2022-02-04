@@ -12,58 +12,113 @@ paths:
       operationId: createUser
       tags:
         - Users
+      requestBody:
+        $ref: "#/components/requestBodies/UserUpsertBody"
       security:
         - firebaseAuth: [ ]
       responses:
         200:
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
+          $ref: "#/components/responses/UserResponse"
     get:
       operationId: usersGet
       tags:
         - Users
       summary: Get the list of all users
       parameters:
-        - name: q
-          in: query
-          required: false
-          description: Search for users
-          schema:
-            type: string
-            nullable: true
-        - name: count
-          in: query
-          required: false
-          schema:
-            type: number
-            default: 20
-            minimum: 1
-        - name: page
-          in: query
-          schema:
-            type: number
-            default: 1
-            minimum: 1
+        - $ref: "#/components/parameters/IncludeTotal"
+        - $ref: "#/components/parameters/QParam"
+        - $ref: "#/components/parameters/OptionalIdParam"
+        - $ref: "#/components/parameters/CountParam"
+        - $ref: "#/components/parameters/PageParam"
       responses:
         200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                required:
-                  - users
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
+          $ref: "#/components/responses/UsersResponse"
 components:
+  requestBodies:
+    UserUpsertBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserCreate"
+  responses:
+    UsersResponse:
+      description: Returns Users
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/PaginationHelper"
+              - $ref: "#/components/schemas/Users"
+    UserResponse:
+      description: Returns User
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorSchema"
+  parameters:
+    QParam:
+      name: q
+      in: query
+      required: false
+      schema:
+        type: string
+        nullable: true
+    CountParam:
+      name: count
+      in: query
+      required: false
+      schema:
+        type: number
+        default: 20
+        minimum: 1
+    PageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: number
+        default: 1
+        minimum: 1
+    IncludeTotal:
+      in: query
+      name: includeTotal
+      required: false
+      schema:
+        type: string
+        default: "false"
+        enum:
+          - "false"
+          - "true"
+    IdParam:
+      in: query
+      name: id
+      required: true
+      schema:
+        type: string
+    OptionalIdParam:
+      in: query
+      name: id
+      required: false
+      description: returns the single resource
+      schema:
+        type: string
   schemas:
+    PaginationHelper:
+      type: object
+      required:
+        - nextPage
+      properties:
+        nextPage:
+          type: number
+          nullable: true
+        total:
+          type: number
     UserCreate:
       type: object
       required:
@@ -79,11 +134,37 @@ components:
           description: Age of user
           minimum: 0
           maximum: 150
+    Users:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     User:
       type: object
       properties:
         type:
           type: string
+    ErrorSchema:
+      type: object
+      required:
+        - message
+        - error
+        - statusCode
+        - data
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        statusCode:
+          type: number
+        data:
+          type: object
+          nullable: true
     Url:
       type: string
       description: Url of a resource
