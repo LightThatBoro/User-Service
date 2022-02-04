@@ -30,4 +30,20 @@ import { join } from "path";
 
 	await writeFile(join(TYPES_FOLDER, "operation-mediator.ts"), operationsMediatorTs);
 
+	const schemaBlock = generatedFile.split(`export interface components {
+  schemas:`)[1].split("responses")[0];
+
+	const schemaNames = schemaBlock.match(/[^*]\s([A-Z][a-z]*)+:/g)
+		?.map(e => e.trim().replace(":", ""));
+
+	let typesIndexTs = "import { components } from \"./gen\";\n";
+
+	for(const name of schemaNames!) {
+		typesIndexTs+=`\nexport type I${name} = components["schemas"]["${name}"];\n`;
+	}
+
+	typesIndexTs+="\nexport type IUserType = \"user\" | \"educator\" | \"admin\";";
+
+	await writeFile(join(TYPES_FOLDER, "index.ts"), typesIndexTs);
+
 })();

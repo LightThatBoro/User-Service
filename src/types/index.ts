@@ -1,16 +1,17 @@
-import { Connection } from "typeorm";
 import { components } from "./gen";
+
+export type IPaginationHelper = components["schemas"]["PaginationHelper"];
+
+export type IUserCreate = components["schemas"]["UserCreate"];
+
+export type IUsers = components["schemas"]["Users"];
 
 export type IUser = components["schemas"]["User"];
 
-export interface ISubscriberParams {
-    userId: string,
-    data: Record<any, any>,
-    db: Connection
-}
+export type IErrorSchema = components["schemas"]["ErrorSchema"];
 
-export enum Subscribers {
-    InstituteUpdate = "InstituteUpdate",
-}
+export type IUrl = components["schemas"]["Url"];
+
+export type ITimestamp = components["schemas"]["Timestamp"];
 
 export type IUserType = "user" | "educator" | "admin";
