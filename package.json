@@ -5,6 +5,7 @@
   "main": ".build/index.js",
   "scripts": {
     "start": "NODE_ENV=development sls offline start",
+    "gen:all": "yarn gen:types; yarn gen:routes; yarn gen:subscribers",
     "gen:types": "yarn ts-node src/utils/gen-types.ts",
     "gen:routes": "yarn ts-node src/utils/generate-routes-index",
     "gen:subscribers": "yarn ts-node src/utils/generate-subscribers-index",
