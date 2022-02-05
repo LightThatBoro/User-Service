@@ -1,4 +1,5 @@
 import { kebabize, pascalize, SUBSCRIBERS_FOLDER, typeormRouteFileBoilerplate } from "@frat/core";
+import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
 import { Subscribers } from "../types/subscriber-types";
@@ -6,7 +7,10 @@ import { readdirRecursive } from "./generate-routes-index";
 
 const generateSubscriberFile = async() => {
 	for(const key of Object.keys(Subscribers)) {
-		await writeFile(join(SUBSCRIBERS_FOLDER, `${ kebabize(key) }.ts`), typeormRouteFileBoilerplate(key));
+		const subscriberFilePath = join(SUBSCRIBERS_FOLDER, `${kebabize(key)}.ts`);
+		if(!existsSync(subscriberFilePath)) {
+			await writeFile(subscriberFilePath, typeormRouteFileBoilerplate(key));
+		}
 	}
 };
 
@@ -22,8 +26,8 @@ const generateSubscribersIndex = async() => {
 			// also -3 to remove ".ts" extension
 			file = "." + file.slice(SUBSCRIBERS_FOLDER.length, -3);
 			const pascalName = pascalize(name);
-			indexTs += `import { ${ pascalName } } from "${ file }";\n`;
-			exports += `\t${ pascalName },\n`;
+			indexTs += `import { ${pascalName} } from "${file}";\n`;
+			exports += `\t${pascalName},\n`;
 		}
 	}
 

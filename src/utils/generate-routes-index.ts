@@ -26,7 +26,10 @@ export const readdirRecursive = async(dir: string): Promise<string[]> => {
 
 const generateRoutes = async() => {
 	for(const key of Object.keys(operationMediator)) {
-		await writeFile(join(ROUTES_FOLDER, `${kebabize(key)}.ts`), typeormRouteFileBoilerplate(key));
+		const routeFilePath = join(ROUTES_FOLDER, `${kebabize(key)}.ts`);
+		if(!existsSync(routeFilePath)) {
+			await writeFile(routeFilePath, typeormRouteFileBoilerplate(key));
+		}
 
 		const testFilePath = join(TEST_FOLDER, `test.${key}.ts`);
 		if(!existsSync(testFilePath)) {
