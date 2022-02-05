@@ -1,8 +1,8 @@
 import request from "supertest";
 import { describeWithApp, getIdToken } from "./test-setup";
 
-describeWithApp("User", (app) => {
-	it("should get users", async() => {
+describeWithApp("Users", (app) => {
+	it("should users get", async() => {
 		await request(app)
 			.get("/users")
 			.set("Authorization", `Bearer ${ getIdToken({ id: "any" }) }`)

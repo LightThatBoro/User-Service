@@ -1,4 +1,4 @@
-import { camelize, kebabize, ROUTES_FOLDER, typeormRouteFileBoilerplate } from "@frat/core";
+import { camelize, kebabize, ROUTES_FOLDER, TEST_FOLDER, testFileBoilerplate, typeormRouteFileBoilerplate } from "@frat/core";
 import { readdir, stat, writeFile } from "fs/promises";
 import { join, parse, } from "path";
 import { operationMediator } from "../types/operation-mediator";
@@ -19,6 +19,7 @@ export const readdirRecursive = async(dir: string): Promise<string[]> => {
 const generateRoutes = async() => {
 	for(const key of Object.keys(operationMediator)) {
 		await writeFile(join(ROUTES_FOLDER, `${ kebabize(key) }.ts`), typeormRouteFileBoilerplate(key));
+		await writeFile(join(TEST_FOLDER, `test.${ key }.ts`), testFileBoilerplate(kebabize(key).replace("-", " ")));
 	}
 };
 
