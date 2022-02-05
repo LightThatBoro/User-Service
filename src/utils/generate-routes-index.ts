@@ -1,4 +1,12 @@
-import { camelize, kebabize, ROUTES_FOLDER, TEST_FOLDER, testFileBoilerplate, typeormRouteFileBoilerplate } from "@frat/core";
+import {
+	camelize,
+	kebabize,
+	ROUTES_FOLDER,
+	TEST_FOLDER,
+	testFileBoilerplate,
+	typeormRouteFileBoilerplate
+} from "@frat/core";
+import { existsSync } from "fs";
 import { readdir, stat, writeFile } from "fs/promises";
 import { join, parse, } from "path";
 import { operationMediator } from "../types/operation-mediator";
@@ -9,7 +17,7 @@ export const readdirRecursive = async(dir: string): Promise<string[]> => {
 		subdirs.map(
 			async(subdir) => {
 				const res = join(dir, subdir);
-				return (await stat(res)).isDirectory() ? readdirRecursive(res) : [ res ];
+				return (await stat(res)).isDirectory() ? readdirRecursive(res) : [res];
 			}
 		)
 	);
@@ -18,8 +26,12 @@ export const readdirRecursive = async(dir: string): Promise<string[]> => {
 
 const generateRoutes = async() => {
 	for(const key of Object.keys(operationMediator)) {
-		await writeFile(join(ROUTES_FOLDER, `${ kebabize(key) }.ts`), typeormRouteFileBoilerplate(key));
-		await writeFile(join(TEST_FOLDER, `test.${ key }.ts`), testFileBoilerplate(kebabize(key).replace("-", " ")));
+		await writeFile(join(ROUTES_FOLDER, `${kebabize(key)}.ts`), typeormRouteFileBoilerplate(key));
+
+		const testFilePath = join(TEST_FOLDER, `test.${key}.ts`);
+		if(!existsSync(testFilePath)) {
+			await writeFile(testFilePath, testFileBoilerplate(kebabize(key).replace("-", " ")));
+		}
 	}
 };
 
@@ -32,7 +44,7 @@ const generateRoutesIndex = async() => {
 			// strip relative path, use path from inside routes folder
 			// also -3 to remove ".ts" extension
 			file = "." + file.slice(ROUTES_FOLDER.length, -3);
-			indexTs += `\t${ camelize(name) }: async() => (await import("${ file }")).default,\n`;
+			indexTs += `\t${camelize(name)}: async() => (await import("${file}")).default,\n`;
 		}
 	}
 
