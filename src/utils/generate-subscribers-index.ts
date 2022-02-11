@@ -1,4 +1,4 @@
-import { kebabize, pascalize, SUBSCRIBERS_FOLDER, typeormRouteFileBoilerplate } from "@frat/core";
+import { kebabize, pascalize, SUBSCRIBERS_FOLDER, typeormSubFileBoilerplate } from "@frat/core";
 import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
@@ -9,7 +9,7 @@ const generateSubscriberFile = async() => {
 	for(const key of Object.keys(Subscribers)) {
 		const subscriberFilePath = join(SUBSCRIBERS_FOLDER, `${kebabize(key)}.ts`);
 		if(!existsSync(subscriberFilePath)) {
-			await writeFile(subscriberFilePath, typeormRouteFileBoilerplate(key));
+			await writeFile(subscriberFilePath, typeormSubFileBoilerplate(key));
 		}
 	}
 };
