@@ -42,8 +42,6 @@ import { join } from "path";
 		typesIndexTs+=`\nexport type I${name} = components["schemas"]["${name}"];\n`;
 	}
 
-	typesIndexTs+="\nexport type IUserType = \"user\" | \"educator\" | \"admin\";";
-
 	await writeFile(join(TYPES_FOLDER, "index.ts"), typesIndexTs);
 
 })();
