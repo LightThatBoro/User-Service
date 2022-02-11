@@ -9,3 +9,6 @@ export interface ISubscriberParams {
 export enum Subscribers {
     InstituteUpdate = "InstituteUpdate",
 }
+
+export enum Publishers {
+}

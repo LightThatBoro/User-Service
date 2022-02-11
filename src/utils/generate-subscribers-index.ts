@@ -2,7 +2,7 @@ import { kebabize, pascalize, SUBSCRIBERS_FOLDER, typeormRouteFileBoilerplate } 
 import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 import { join, parse } from "path";
-import { Subscribers } from "../types/subscriber-types";
+import { Subscribers } from "../types/pubsub-types";
 import { readdirRecursive } from "./generate-routes-index";
 
 const generateSubscriberFile = async() => {

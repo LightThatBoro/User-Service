@@ -1,7 +1,7 @@
 import { logger as MAIN_LOGGER } from "@frat/core";
 import { Context, SNSEvent } from "aws-lambda";
 import subscribers from "../subscribers";
-import { ISubscriberParams } from "../types/subscriber-types";
+import { ISubscriberParams } from "../types/pubsub-types";
 import getConnection from "../utils/get-connection";
 
 export const handler = async(event: SNSEvent, ctx: Context) => {
