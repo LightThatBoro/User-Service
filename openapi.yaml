@@ -1,181 +1,143 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
-  title: Service name
   version: 1.0.0
-  description: |
-    Template for writing microservices
+  title: User Service
+  description: 'Swagger documentation for User Service'
+  
+servers:
+  - description: ''
+    url: https://
 
-paths:
-  /users:
+paths: 
+  /user:
     post:
-      summary: Creates a new user
-      operationId: createUser
+      operationId: insertUser
+      description: Create a new user
       tags:
-        - Users
+        - User
       requestBody:
-        $ref: "#/components/requestBodies/UserUpsertBody"
-      security:
-        - firebaseAuth: [ ]
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInsertReq'
       responses:
-        200:
-          $ref: "#/components/responses/UserResponse"
+        '200':
+          description: User added successfully 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+                
     get:
-      operationId: usersGet
+      operationId: getUser
+      description: Get User information
       tags:
-        - Users
-      summary: Get the list of all users
+        - User
       parameters:
-        - $ref: "#/components/parameters/IncludeTotal"
-        - $ref: "#/components/parameters/QParam"
-        - $ref: "#/components/parameters/OptionalIdParam"
-        - $ref: "#/components/parameters/CountParam"
-        - $ref: "#/components/parameters/PageParam"
+        - name: userId
+          required: true
+          in: query
+          description: get User info using id
+          schema:
+            type: array
+            items:
+              type: string
+            maximum: 100
       responses:
-        200:
-          $ref: "#/components/responses/UsersResponse"
+        '200':
+          description: Here is your user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+    
+    delete:
+      operationId: deleteUser
+      description: Delete user
+      tags: 
+        - User
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            maximum: 100
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUser'
+                
+    patch:
+      operationId: updateUser
+      tags:
+        - User
+      description: Update User
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInsertReq'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    
 components:
-  requestBodies:
-    UserUpsertBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserCreate"
-  responses:
-    UsersResponse:
-      description: Returns Users
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/PaginationHelper"
-              - $ref: "#/components/schemas/Users"
-    UserResponse:
-      description: Returns User
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/User"
-    ErrorResponse:
-      description: Error response
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorSchema"
-  parameters:
-    QParam:
-      name: q
-      in: query
-      required: false
-      schema:
-        type: string
-        nullable: true
-    CountParam:
-      name: count
-      in: query
-      required: false
-      schema:
-        type: number
-        default: 20
-        minimum: 1
-    PageParam:
-      name: page
-      in: query
-      required: false
-      schema:
-        type: number
-        default: 1
-        minimum: 1
-    IncludeTotal:
-      in: query
-      name: includeTotal
-      required: false
-      schema:
-        type: string
-        default: "false"
-        enum:
-          - "false"
-          - "true"
-    IdParam:
-      in: query
-      name: id
-      required: true
-      schema:
-        type: string
-    OptionalIdParam:
-      in: query
-      name: id
-      required: false
-      description: returns the single resource
-      schema:
-        type: string
   schemas:
-    PaginationHelper:
-      type: object
-      required:
-        - nextPage
-      properties:
-        nextPage:
-          type: number
-          nullable: true
-        total:
-          type: number
-    UserCreate:
-      type: object
-      required:
-        - name
-        - age
-      properties:
-        name:
-          type: string
-          description: Name of the user
-          example: PP
-        age:
-          type: number
-          description: Age of user
-          minimum: 0
-          maximum: 150
-    Users:
-      type: object
-      required:
-        - users
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
     User:
       type: object
       properties:
-        type:
+        userId:
           type: string
-    ErrorSchema:
+        name:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    UserInsertReq:
       type: object
-      required:
-        - message
-        - error
-        - statusCode
-        - data
       properties:
-        message:
+        name:
           type: string
-        error:
+        phone:
           type: string
-        statusCode:
-          type: number
-        data:
-          type: object
-          nullable: true
-    Url:
-      type: string
-      description: Url of a resource
-      format: url
-    Timestamp:
-      type: string
-      format: date-time
-      description: An ISO formatted timestamp
-  securitySchemes:
-    firebaseAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: Uses firebase idToken for auth
+        address:
+          type: string
+        email:
+          type: string
+          
+    DeleteUser:
+      type: object
+      properties:
+        deletedCount:
+          type: number 

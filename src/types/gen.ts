@@ -4,110 +4,115 @@
  */
 
 export interface paths {
-  "/users": {
-    get: operations["usersGet"];
-    post: operations["createUser"];
+  "/user": {
+    /** Get User information */
+    get: operations["getUser"];
+    /** Create a new user */
+    post: operations["insertUser"];
+    /** Delete user */
+    delete: operations["deleteUser"];
+    /** Update User */
+    patch: operations["updateUser"];
   };
 }
 
 export interface components {
   schemas: {
-    PaginationHelper: {
-      nextPage: number | null;
-      total?: number;
-    };
-    UserCreate: {
-      /**
-       * @description Name of the user
-       * @example PP
-       */
-      name: string;
-      /** @description Age of user */
-      age: number;
-    };
-    Users: {
-      users: components["schemas"]["User"][];
-    };
     User: {
-      type?: string;
+      userId?: string;
+      name?: string;
+      phone?: string;
+      address?: string;
+      email?: string;
+      /** Format: date-time */
+      createdAt?: Date | string;
+      /** Format: date-time */
+      updatedAt?: Date | string;
     };
-    ErrorSchema: {
-      message: string;
-      error: string;
-      statusCode: number;
-      data: { [key: string]: unknown } | null;
+    UserInsertReq: {
+      name?: string;
+      phone?: string;
+      address?: string;
+      email?: string;
     };
-    /**
-     * Format: url
-     * @description Url of a resource
-     */
-    Url: string;
-    /**
-     * Format: date-time
-     * @description An ISO formatted timestamp
-     */
-    Timestamp: Date | string;
-  };
-  responses: {
-    /** Returns Users */
-    UsersResponse: {
-      content: {
-        "application/json": components["schemas"]["PaginationHelper"] &
-          components["schemas"]["Users"];
-      };
-    };
-    /** Returns User */
-    UserResponse: {
-      content: {
-        "application/json": components["schemas"]["User"];
-      };
-    };
-    /** Error response */
-    ErrorResponse: {
-      content: {
-        "application/json": components["schemas"]["ErrorSchema"];
-      };
-    };
-  };
-  parameters: {
-    QParam: string | null;
-    CountParam: number;
-    PageParam: number;
-    IncludeTotal: "false" | "true";
-    IdParam: string;
-    /** @description returns the single resource */
-    OptionalIdParam: string;
-  };
-  requestBodies: {
-    UserUpsertBody: {
-      content: {
-        "application/json": components["schemas"]["UserCreate"];
-      };
+    DeleteUser: {
+      deletedCount?: number;
     };
   };
 }
 
 export interface operations {
-  usersGet: {
+  /** Get User information */
+  getUser: {
     parameters: {
       query: {
-        includeTotal?: components["parameters"]["IncludeTotal"];
-        q?: components["parameters"]["QParam"];
-        /** returns the single resource */
-        id?: components["parameters"]["OptionalIdParam"];
-        count?: components["parameters"]["CountParam"];
-        page?: components["parameters"]["PageParam"];
+        /** get User info using id */
+        userId: string[];
       };
     };
     responses: {
-      200: components["responses"]["UsersResponse"];
+      /** Here is your user */
+      200: {
+        content: {
+          "application/json": {
+            users?: components["schemas"]["User"][];
+          };
+        };
+      };
     };
   };
-  createUser: {
+  /** Create a new user */
+  insertUser: {
     responses: {
-      200: components["responses"]["UserResponse"];
+      /** User added successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"];
+        };
+      };
     };
-    requestBody: components["requestBodies"]["UserUpsertBody"];
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInsertReq"];
+      };
+    };
+  };
+  /** Delete user */
+  deleteUser: {
+    parameters: {
+      query: {
+        userId: string[];
+      };
+    };
+    responses: {
+      /** User deleted successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DeleteUser"];
+        };
+      };
+    };
+  };
+  /** Update User */
+  updateUser: {
+    parameters: {
+      query: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** User updated successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInsertReq"];
+      };
+    };
   };
 }
 

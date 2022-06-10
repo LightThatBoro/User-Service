@@ -1,14 +1,14 @@
 require("dotenv").config({ path: ".env.test" });  // ensure we load this one
 import { Chance } from "chance";
 import { Application } from "express";
-import { IUserType } from "../types";
+// import { IUserType } from "../types";
 import getConnection from "../utils/get-connection";
 import makeTestServer from "./make-test-server";
 
 jest.setTimeout(20_000);
 
 export const getIdToken = ({ email, id, name, type, username, profilePic }: {
-    id: string, type?: IUserType,
+    id: string, type?: string,
     email?: string,
     username?: string,
     name?: string,

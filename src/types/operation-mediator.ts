@@ -1,24 +1,75 @@
 export const operationMediator = {
-  usersGet: {
+  /** Get User information */
+  getUser: {
     parameters: `{
       query: {
-        includeTotal?: components["parameters"]["IncludeTotal"],
-        q?: components["parameters"]["QParam"],
-        /** returns the single resource */
-        id?: components["parameters"]["OptionalIdParam"],
-        count?: components["parameters"]["CountParam"],
-        page?: components["parameters"]["PageParam"],
+        /** get User info using id */
+        userId: string[],
       },
     }`,
     responses: `{
-      200: components["responses"]["UsersResponse"],
+      /** Here is your user */
+      200: {
+        content: {
+          "application/json": {
+            users?: components["schemas"]["User"][],
+          },
+        },
+      },
     }`,
   },
-  createUser: {
+  /** Create a new user */
+  insertUser: {
     responses: `{
-      200: components["responses"]["UserResponse"],
+      /** User added successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"],
+        },
+      },
     }`,
-    requestBody: `components["requestBodies"]["UserUpsertBody]`,
+    requestBody: `{
+      content: {
+        "application/json": components["schemas"]["UserInsertReq"],
+      },
+    }`,
+  },
+  /** Delete user */
+  deleteUser: {
+    parameters: `{
+      query: {
+        userId: string[],
+      },
+    }`,
+    responses: `{
+      /** User deleted successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DeleteUser"],
+        },
+      },
+    }`,
+  },
+  /** Update User */
+  updateUser: {
+    parameters: `{
+      query: {
+        userId: string,
+      },
+    }`,
+    responses: `{
+      /** User updated successfully */
+      200: {
+        content: {
+          "application/json": components["schemas"]["User"],
+        },
+      },
+    }`,
+    requestBody: `{
+      content: {
+        "application/json": components["schemas"]["UserInsertReq"],
+      },
+    }`,
   },
 }
 

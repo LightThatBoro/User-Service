@@ -17,7 +17,7 @@
     "lint:fix": "yarn lint --fix || true"
   },
   "keywords": [],
-  "author": "Shivam Verma",
+  "author": "Sahajpal Singh Mahla",
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^9.1.2",
